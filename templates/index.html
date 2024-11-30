@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/aplayer/dist/APlayer.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script src="https://unpkg.com/aplayer/dist/APlayer.min.js"></script>
+    <title>Video Background Page</title>
+    <style>
+    @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600&display=swap");
+
+    :root {
+        --primary-clr: rgba(228, 228, 229, 1);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Nunito", sans-serif;
+    }
+
+    body {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        width: 100%;
+        background: url("static/background/back.webp") no-repeat center center;
+        background-size: cover;  /* 背景图铺满整个页面 */
+        background-attachment: fixed;  /* 背景图固定，滚动时不动 */
+    }
+
+
+
+    @keyframes slidein {
+        0%,
+        100% {
+        background-position: 20% 0%;
+        background-size: cover;
+        }
+        50% {
+        background-position: 100% 0%;
+        background-size: cover;
+        }
+    }
+
+    .album-cover {
+      width: 100%;
+    }
+
+    .swiper {
+        width: 100%;
+        padding: 40px 0 100px;
+        left: -25px;
+    }
+
+    .swiper-slide {
+          position: relative;
+          max-width: 320px;
+          max-height: 230px;
+          aspect-ratio: 1/1;
+          border-radius: 10px;
+    }
+
+    .swiper-slide img {
+          object-fit: cover;
+          width: 100%;
+          height: 100%;
+          border-radius: inherit;
+          pointer-events: none;
+          user-select: none;
+    }
+
+    .swiper-slide-active .overlay {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(28, 22, 37, 0.6);
+          border-radius: inherit;
+          opacity: 0;
+          transition: all 0.4s linear;
+    }
+
+    .swiper-slide:hover .overlay {
+          opacity: 1;
+    }
+
+    .swiper-slide .overlay ion-icon {
+          opacity: 0;
+    }
+
+    .swiper-slide-active:hover .overlay ion-icon {
+          font-size: 4rem;
+          color: #eb0b0b;
+          opacity: 1;
+          cursor: pointer;
+    }
+
+    /* Music Player */
+
+    .music-player {
+        position: relative;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: var(--primary-clr);
+        width: 100%;
+        border-radius: 20px;
+        margin-top: calc(10% + 250px);
+        padding-left: 26%;
+        padding-right: calc(75% - 400px);;
+    }
+
+    .music-player h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        line-height: 1.6;
+    }
+
+    .music-player p {
+        font-size: 1rem;
+        font-weight: 400;
+        opacity: 0.6;
+    }
+
+    /* Music Player Progress */
+
+    #progress {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 100%;
+        height: 7px;
+        background: rgba(163, 162, 164, 0.4);
+        border-radius: 4px;
+        margin: 32px 0 24px;
+        cursor: pointer;
+    }
+
+    #progress::-webkit-slider-thumb {
+        appearance: none;
+        -webkit-appearance: none;
+        background: rgba(163, 162, 164, 0.9);
+        width: 16px;
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        outline: 4px solid var(--primary-clr);
+        box-shadow: 0 6px 10px rgba(5, 36, 28, 0.3);
+    }
+
+    /* Music Player Controls */
+
+    .controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .controls button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        aspect-ratio: 1/1;
+        margin: 20px;
+        background: transparent; /* 背景透明 */
+        color: var(--primary-clr);
+        border: none; /* 无边框 */
+        outline: 0;
+        font-size: 1.1rem;
+        box-shadow: none; /* 去除阴影 */
+        cursor: pointer;
+        transition: all 0.3s linear;
+    }
+
+
+    .controls button:is(:hover, :focus-visible) {
+      transform: scale(0.96);
+    }
+
+    .controls button:nth-child(2) {
+      transform: scale(1.3);
+    }
+
+    .controls button:nth-child(2):is(:hover, :focus-visible) {
+      transform: scale(1.25);
+    }
+
+    .layout {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        pointer-events: none;
+        user-select: none;
+        display: flex; /* 使用 Flexbox 布局 */
+        align-items: center; /* 垂直方向居中 */
+        justify-content: space-between; /* 两个子元素左右分布 */
+    }
+
+    .rectangle {
+        width: 200px; /* 矩形宽度 */
+        height: 200px; /* 矩形高度 */
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+    }
+
+    .rectangle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .tv-player {
+        position:absolute;
+        width: 400px;
+        height: 250px;
+        background: url("static/background/tv-bottom.jpg") no-repeat center center;
+        background-size: cover; /* 等比例缩放铺满 */
+        top: 10%;             /* 距离页面顶部 0 */
+        bottom: 0;          /* 距离页面底部 0 */
+        left: 25%;        /* 距离页面左侧 100px */
+    }
+
+    .top-container {
+        display: flex;
+        justify-content: space-between; /* 水平对齐：子元素之间有相等的空间 */
+        width: 100%;
+        height: 100%;
+    }
+    /* tv-screen 容器样式 */
+    .tv-screen {
+        position: absolute;
+        padding: 21px 19px 18px 19px;
+        width: 400px; /* 保证容器大小 */
+        height: 250px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* 默认显示的图片样式 */
+    .tv-screen img {
+        position: absolute;
+        width: 362px; /* 图片自适应容器宽度 */
+        height: 211px; /* 图片自适应容器高度 */
+        object-fit: cover; /* 保持图片的宽高比，裁剪多余部分 */
+        z-index: 1; /* 确保图片在视频下层 */
+    }
+
+    /* 视频样式，默认隐藏 */
+    .tv-screen video {
+        position: absolute;
+        width: 362px; /* 视频自适应容器宽度，与图片一致 */
+        height: 211px; /* 视频自适应容器高度，与图片一致 */
+        object-fit: cover; /* 保证视频覆盖整个容器 */
+        display: none; /* 初始时隐藏视频 */
+        z-index: 0; /* 视频层级低于图片 */
+    }
+
+    /* 播放按钮样式 */
+    .tv-screen button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 20px;
+        background: transparent; /* 背景透明 */
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        z-index: 2; /* 确保按钮在图片和视频之上 */
+        transition: background-color 0.3s ease;
+    }
+
+    .tv-screen button:hover {
+        background-color: rgba(0, 0, 0, 0.7); /* 鼠标悬停时按钮背景变深 */
+    }
+
+
+    .bottom-container-right {
+        font-family: 'Arial', sans-serif; /* 设置字体 */
+        color: #fff; /* 设置文字颜色 */
+        padding: 10px;
+        border-radius: 10px;
+        text-align: left; /* 中心对齐文本 */
+        width: 100%; /* 容器宽度 */
+        height: 55%;
+    }
+
+    @font-face {
+        font-family: 'MyCustomFont';
+        src: url('/static/fonts/Montserrat Bold.otf') format('opentype');  /* 引用静态文件 */
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    /* 使用自定义字体 */
+    .bottom-container-right h1 {
+        font-family: 'Montserrat Bold', sans-serif;
+        font-size: 3em;
+        font-weight: bolder;
+        margin-bottom: 10px;
+        margin-top: 50px;
+    }
+    .song-name {
+        font-size: 1.5em; /* 歌曲名称字体大小 */
+        margin-bottom: 20px;
+        font-style: italic; /* 歌曲名称为斜体 */
+    }
+
+    .text-describe {
+        font-family: 'Arial', sans-serif; /* 设置字体 */
+        color: #fff; /* 设置文字颜色 */
+        padding: 10px;
+        border-radius: 10px;
+        text-align: left; /* 中心对齐文本 */
+        width: 100%; /* 容器宽度 */
+        height: 45%;
+        margin-top: 50px;
+        margin-bottom: 40px;
+    }
+
+    .text-main {
+        font-size: 1.3em; /* 歌词字体大小 */
+        line-height: 1.4; /* 设置行间距 */
+        font-family: 'Roboto', sans-serif;
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+
+    .top-container-left{
+        position: relative;;
+        flex-direction: column; /* 垂直方向为主轴 */
+        justify-content: center; /* 主轴上居中（垂直方向） */
+        align-items: center; /* 交叉轴上居中（水平方向） */
+        height: 100vh; /* 父容器高度占满视口，便于展示 */
+        width: 55%;
+    }
+
+    .text-describe h1{
+        font-size: 2.5em; /* 设置标题字体大小 */
+        font-family: 'Montserrat Bold', sans-serif;
+        font-weight: bold; /* 加粗字体 */
+        margin-bottom: 10px;
+    }
+
+    .top-container-right{
+        display: flex;
+        flex-direction: column; /* 垂直方向为主轴 */
+        justify-content: center; /* 主轴上居中（垂直方向） */
+        align-items: center; /* 交叉轴上居中（水平方向） */
+        height: 100vh; /* 父容器高度占满视口，便于展示 */
+        width: 45%;
+    }
+    .lyrics-container {
+        max-height: 200px;
+        overflow-y: auto;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.6;
+        padding: 0;
+        color: #fff;
+        border: none;
+        margin-top: 20px;
+    }
+
+    /* 默认歌词样式 */
+    .lyrics-container p {
+        color: #aaa;
+        margin: 5px 0;
+        transition: all 0.3s;
+    }
+
+    /* 高亮歌词样式 */
+    .lyrics-container p.active {
+      color: #FFF8DC;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    /* 隐藏非当前段落歌词 */
+    .lyrics-container p.hidden {
+      display: none;
+    }
+
+    .vinyl {
+        width: 200px; /* 唱片直径 */
+        height: 200px;
+        position: relative;
+        z-index: 0;
+        margin-left: -100px; /* 唱片直径的一半，保证左边对齐 */
+        transition: transform 1.5s ease;
+        cursor: pointer;
+        display: none; /* 默认情况下，所有唱片是隐藏的 */
+    }
+
+    .vinyl img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%; /* 保证唱片图片是圆形 */
+        object-fit: cover; /* 确保图片完整显示 */
+    }
+
+    /* 旋转动画 */
+    .vinyl img.rotate {
+        animation: spin 3s linear infinite; /* 旋转动画设置为 3 秒无限循环 */
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg); /* 起始点 */
+        }
+        to {
+            transform: rotate(360deg); /* 完整旋转一圈 */
+        }
+    }
+
+    /* 显示当前播放的唱片 */
+    .vinyl.show {
+        display: block; /* 播放时显示 */
+    }
+    </style>
+</head>
+<body>
+    <div class="top-container" style="overflow: visible;">
+        <div class="top-container-left">
+            <div class="tv-player">
+                <div class="tv-screen">
+                    <!-- 默认显示图片 -->
+                    <img id="tv-image" src="/static/background/tv-surface-texture.png" alt="TV Screen Image">
+
+                    <!-- 视频播放器（初始隐藏） -->
+                    <video id="tv-video" controls>
+                        <source id="video-source" src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+
+                    <!-- 播放按钮 -->
+                    <button id="play-button" onclick="toggleVideo()"></button>
+                </div>
+            </div>
+            <div class="music-player">
+                <audio id="song">
+                    <source src="song-list/Luke-Bergs-Gold.mp3" type="audio/mpeg" />
+                </audio>
+
+                <!-- 进度条 -->
+                <input type="range" value="0" id="progress" class="progress-bar"/>
+
+                <div class="controls" style="margin-left: -10px">
+                    <!-- 上一首按钮 -->
+                    <button class="control-button backward" style="margin-left: 0;margin-right: 110px;border-radius: 50%; border: none; background-color: transparent;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon">
+                            <path d="M14 19l-7-7 7-7v14z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6 5v14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+
+                    <!-- 播放/暂停按钮 -->
+                    <button class="play-pause-btn" id="playPauseBtn" style="border-radius: 50%; border: none; background-color: transparent;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon" id="controlIcon">
+                            <path id="play-icon" d="M8 5v14l11-7z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path id="pause-icon" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="currentColor" style="display:none;"/>
+                        </svg>
+                    </button>
+
+                    <!-- 下一首按钮 -->
+                    <button class="control-button forward" style="margin-left: 110px;margin-right: 0; border-radius: 50%; border: none; background-color: transparent;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon">
+                            <path d="M10 5l7 7-7 7V5z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M18 5v14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="album-cover">
+                <div class="swiper">
+                    <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <div class="layout">
+                                    <div class="rectangle">
+                                        <img src="/static/background/cover.jpg" alt="Rectangle Image">
+                                    </div>
+                                    <div class="vinyl" id="vinyl1">
+                                        <img src="/static/background/vinyl.png" alt="Vinyl Record">
+                                    </div>
+                                </div>
+                                    <div class="overlay">
+                                    <a
+                                        href="https://www.youtube.com/watch?v=aatr_2MstrI&ab_channel=CleanBandit"
+                                        target="_blank"
+                                        ><ion-icon name="logo-youtube"></ion-icon
+                                    ></a>
+                                </div>
+                            </div>
+                      <div class="swiper-slide">
+                            <div class="layout">
+                                <div class="rectangle">
+                                    <img src="/static/background/exam1.jpg" alt="Rectangle Image" style="height: 185px;margin-top: 5px">
+                                </div>
+                                <div class="vinyl" id="vinyl2">
+                                    <img src="/static/background/vinyl.png" alt="Vinyl Record">
+                                </div>
+                            </div>
+                        <div class="overlay">
+                              <a
+                                href="https://www.youtube.com/watch?v=aatr_2MstrI&ab_channel=CleanBandit"
+                                target="_blank"
+                                ><ion-icon name="logo-youtube"></ion-icon
+                              ></a>
+                        </div>
+                      </div>
+                            <div class="swiper-slide">
+                            <div class="layout">
+                                <div class="rectangle">
+                                    <img src="/static/background/Sunlit Waves.png" alt="Rectangle Image">
+                                </div>
+                                <div class="vinyl" id="vinyl3">
+                                    <img src="/static/background/vinyl2.png" alt="Vinyl Record">
+                                </div>
+                            </div>
+                            <div class="overlay">
+                                  <a
+                                    href="https://www.youtube.com/watch?v=aatr_2MstrI&ab_channel=CleanBandit"
+                                    target="_blank"
+                                    ><ion-icon name="logo-youtube"></ion-icon
+                                  ></a>
+                            </div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="layout">
+                                    <div class="rectangle">
+                                        <img src="/static/background/给昕瑶的歌.png" alt="Rectangle Image">
+                                    </div>
+                                    <div class="vinyl"  id="vinyl4">
+                                        <img src="/static/background/vinyl.png" alt="Vinyl Record">
+                                    </div>
+                                </div>
+                            <div class="overlay">
+                                  <a
+                                    href="https://www.youtube.com/watch?v=aatr_2MstrI&ab_channel=CleanBandit"
+                                    target="_blank"
+                                    ><ion-icon name="logo-youtube"></ion-icon
+                                  ></a>
+                            </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="top-container-right">
+            <div class="text-describe">
+                <h1 style="margin-bottom: 10px;margin-top: 20px">Pika Delia: Original</h1>
+                <h1 style="margin-bottom: 10px">Songs & MV Collection</h1>
+                <h1 style="margin-bottom: 10px">Collection</h1>
+                <p class="text-main">This collection, features my original songs and music videos, each reflecting my emotions and stories. Through music and visuals, I, Pika Delia, aim to connect with you and share a journey of love' and life.</p>
+                <p class="text-main">这合集包含了我的原创歌曲和音乐视频，每一首歌都传递着我的情感和故事。通过音乐和影像，希望与您产生共鸣，共享一段关于爱与生活的旅程。</p>
+            </div>
+            <div class="bottom-container-right">
+                <h1>Title</h1>
+                <p class="song-name">Song Name</p>
+                <div class="lyrics-container"></div>
+            </div>
+        </div>
+    </div>
+  </body>
+<script>
+// DOM元素
+const progress = document.getElementById("progress");
+const song = document.getElementById("song");
+const controlIcon = document.getElementById("controlIcon");
+const playPauseButton = document.querySelector(".play-pause-btn");
+const nextButton = document.querySelector(".controls button.forward");
+const prevButton = document.querySelector(".controls button.backward");
+const songName = document.querySelector(".bottom-container-right h1");
+const artistName = document.querySelector(".bottom-container-right p");
+const lyricsContainer = document.querySelector(".lyrics-container");
+// 获取唱片元素
+const vinylRecords = document.querySelectorAll(".vinyl img");
+// 存储所有视频文件的数组
+let videoFiles = [];
+let vinylRecords2 = document.querySelectorAll('.vinyl img');  // 选择所有含有图片的 .vinyl 元素
+let songs = []; // 存储歌曲列表
+let currentSongIndex = 0;
+let currentSongIndex2 = 0;
+let parsedLyrics = []; // 存储解析后的歌词时间戳和文本
+
+// 获取视频列表并更新视频播放器
+function fetchVideoList() {
+    fetch('/api/videos')
+        .then(response => response.json())
+        .then(data => {
+            if (data.videos && data.videos.length > 0) {
+                videoFiles = data.videos;
+                // 设置播放器默认的视频
+                updateVideoPlayer();
+            } else {
+                alert('没有找到视频文件');
+            }
+        })
+        .catch(error => {
+            console.error('获取视频文件列表失败:', error);
+        });
+}
+
+// 更新视频播放器的源
+function updateVideoPlayer() {
+    const videoElement = document.getElementById('tv-video');
+    const videoSourceElement = document.getElementById('video-source');
+
+    if (videoFiles.length > 0) {
+        const currentVideo = videoFiles[currentSongIndex2];
+        videoSourceElement.src = `/video/${currentVideo}`;
+        videoElement.load(); // 重新加载视频
+    }
+}
+
+// 切换视频播放和暂停状态
+function toggleVideo() {
+    const videoElement = document.getElementById("tv-video");
+    const imageElement = document.getElementById("tv-image");
+    const playButton = document.getElementById("play-button");
+
+    if (videoElement.paused) {
+        // 显示视频并隐藏图片
+        imageElement.style.display = "none";
+        videoElement.style.display = "block";
+
+        // 播放视频
+        videoElement.play();
+
+    } else {
+        // 暂停视频并显示图片
+        videoElement.pause();
+        imageElement.style.display = "block";
+        videoElement.style.display = "none";
+
+    }
+}
+
+// 跳转到下一个视频
+function nextVideo() {
+    if (videoFiles.length > 0) {
+        currentSongIndex2 = (currentSongIndex2 + 1) % videoFiles.length;
+        updateVideoPlayer();
+        const videoElement = document.getElementById('tv-video');
+        videoElement.play();
+    }
+}
+
+// 跳转到上一个视频
+function prevVideo() {
+    if (videoFiles.length > 0) {
+        currentSongIndex2 = (currentSongIndex2 - 1 + videoFiles.length) % videoFiles.length;
+        updateVideoPlayer();
+        const videoElement = document.getElementById('tv-video');
+        videoElement.play();
+    }
+}
+
+// 页面加载时获取视频列表
+window.onload = function () {
+    fetchVideoList();
+};
+
+
+// 获取歌词数据
+async function fetchLyrics(songTitle) {
+  try {
+    const response = await fetch(`/api/lyrics/${encodeURIComponent(songTitle)}`);
+    const data = await response.json();
+    return data.lyrics || "歌词未找到";
+  } catch (error) {
+    console.error("无法获取歌词", error);
+    return "加载歌词失败";
+  }
+}
+
+// 获取歌曲数据
+async function fetchSongs() {
+  try {
+    const response = await fetch("/api/songs");
+    const data = await response.json();
+
+    // 检查返回数据是否存在歌曲
+    if (data.songs && data.songs.length > 0) {
+      songs = data.songs;
+
+      // 使用 Promise.all 并行加载所有歌词
+      const lyricsPromises = songs.map(song => fetchLyrics(song.title));
+      const lyricsData = await Promise.all(lyricsPromises);
+
+      // 将歌词添加到歌曲列表
+      songs = songs.map((song, index) => ({
+        ...song,
+        lyrics: lyricsData[index] || "歌词未找到"
+      }));
+
+      updateSongInfo();
+    } else {
+      console.log("没有找到歌曲数据");
+    }
+  } catch (error) {
+    console.error("无法获取歌曲数据", error);
+  }
+}
+
+// 更新当前歌曲信息
+function updateSongInfo() {
+  if (songs.length > 0 && songs[currentSongIndex]) {
+    const currentSong = songs[currentSongIndex];
+    songName.textContent = currentSong.title || "无标题";
+    artistName.textContent = currentSong.name || "未知歌手";
+    song.src = currentSong.source; // 设置音频路径
+
+    // 解析歌词并渲染
+    parsedLyrics = parseLyrics(currentSong.lyrics || "");
+    renderLyrics(parsedLyrics);
+  } else {
+    console.error("没有找到当前歌曲的信息");
+  }
+}
+
+// 解析歌词
+function parseLyrics(lyricsText) {
+  const lines = lyricsText.split("\n");
+  const lyrics = lines.map(line => {
+    const match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
+    if (match) {
+      const minutes = parseInt(match[1], 10);
+      const seconds = parseFloat(match[2]);
+      const time = minutes * 60 + seconds;
+      return { time, text: match[3] };
+    }
+    return null;
+  }).filter(line => line !== null);
+  return lyrics;
+}
+
+// 渲染歌词，仅显示当前高亮歌词及其前后两句
+function renderLyrics(lyrics) {
+  if (lyricsContainer) {
+    lyricsContainer.innerHTML = lyrics
+      .map((line, index) => `<p data-index="${index}" class="lyric hidden">${line.text}</p>`)
+      .join("");
+  }
+}
+
+// 更新歌词高亮，仅显示当前句及其前后两句
+function updateLyricsHighlight() {
+  const currentTime = song.currentTime;
+
+  // 找到当前播放时间对应的歌词
+  const currentLyricIndex = parsedLyrics.findIndex((line, index) => {
+    const nextLine = parsedLyrics[index + 1];
+    return currentTime >= line.time && (!nextLine || currentTime < nextLine.time);
+  });
+
+  // 更新歌词高亮及显示
+  if (currentLyricIndex !== -1) {
+    const allLyrics = lyricsContainer.querySelectorAll(".lyric");
+    allLyrics.forEach((lyric, index) => {
+      lyric.classList.add("hidden"); // 隐藏所有歌词
+      lyric.classList.remove("active"); // 移除所有高亮
+      if (
+        index === currentLyricIndex || // 当前句
+        index === currentLyricIndex - 1 || // 前一句
+        index === currentLyricIndex + 1 // 后一句
+      ) {
+        lyric.classList.remove("hidden"); // 显示相关歌词
+      }
+      if (index === currentLyricIndex) {
+        lyric.classList.add("active"); // 高亮当前句
+      }
+    });
+
+    // 自动滚动歌词容器
+    const newActiveLyric = lyricsContainer.querySelector(`[data-index="${currentLyricIndex}"]`);
+    if (newActiveLyric) {
+      lyricsContainer.scrollTop = newActiveLyric.offsetTop - lyricsContainer.offsetHeight / 2;
+    }
+  }
+}
+
+// 播放进度更新
+song.addEventListener("timeupdate", () => {
+  if (!song.paused) {
+    progress.value = song.currentTime;
+    updateLyricsHighlight(); // 同步歌词高亮
+  }
+});
+
+// 更新歌曲最大时长
+song.addEventListener("loadedmetadata", () => {
+  progress.max = song.duration;
+  progress.value = song.currentTime;
+});
+
+// 播放结束后切换到下一首歌
+song.addEventListener("ended", () => {
+    currentSongIndex = (currentSongIndex + 1) % songs.length;
+    updateSongInfo();
+    playSong();
+    // 获取 video 元素
+    const video = document.getElementById('tv-video');
+
+    // 更新视频索引，确保循环播放
+    currentVideoIndex = (currentVideoIndex + 1) % videoList.length;
+
+    // 获取 video 元素的 source 元素
+    const videoSource = document.getElementById('video-source');
+
+    // 更新视频源
+    videoSource.src = videoList[currentVideoIndex];
+
+    // 重新加载视频并播放
+    video.load(); // 重新加载视频源
+    video.play(); // 播放新视频
+});
+
+// 播放/暂停函数
+function playPause() {
+    if (song.paused) {
+        playSong();
+    } else {
+        pauseSong();
+    }
+}
+
+// 播放函数
+function playSong() {
+    song.play();
+    controlIcon.querySelector("#play-icon").style.display = "none";
+    controlIcon.querySelector("#pause-icon").style.display = "block";
+    // 动态获取当前播放的唱片 ID
+    const currentVinylID = `vinyl${currentSongIndex + 1}`; // 索引从 0 开始，加 1 匹配 HTML 的 ID
+    const currentVinyl = document.getElementById(currentVinylID);
+
+    if (currentVinyl) {
+        currentVinyl.classList.add("show");
+        currentVinyl.querySelector("img").classList.add("rotate"); // 让对应唱片旋转
+    }
+}
+
+// 暂停函数
+function pauseSong() {
+    song.pause();
+    controlIcon.querySelector("#pause-icon").style.display = "none";
+    controlIcon.querySelector("#play-icon").style.display = "block";
+
+    // 动态获取当前播放的唱片 ID
+    const currentVinylID = `vinyl${currentSongIndex + 1}`; // 索引从 0 开始，加 1 匹配 HTML 的 ID
+    const currentVinyl = document.getElementById(currentVinylID);
+
+    if (currentVinyl) {
+        currentVinyl.querySelector("img").classList.remove("rotate");
+        currentVinyl.classList.remove("show");
+    }
+}
+
+// 按钮点击事件
+playPauseButton.addEventListener("click", playPause);
+
+// 进度条拖动
+progress.addEventListener("input", () => {
+  song.currentTime = progress.value;
+});
+
+// 点击进度条结束后继续播放
+progress.addEventListener("change", () => {
+    playSong();
+});
+
+// 下一首歌曲
+nextButton.addEventListener("click", () => {
+    nextVideo()
+    // 动态获取当前播放的唱片 ID
+    const currentVinylID = `vinyl${currentSongIndex + 1}`; // 索引从 0 开始，加 1 匹配 HTML 的 ID
+    const currentVinyl = document.getElementById(currentVinylID);
+
+    if (currentVinyl) {
+        currentVinyl.querySelector("img").classList.remove("rotate");
+        currentVinyl.classList.remove("show");
+    }
+        // 获取 video 元素
+    const video = document.getElementById('tv-video');
+
+    // 更新视频索引，确保循环播放
+    currentVideoIndex = (currentVideoIndex + 1) % videoList.length;
+
+    // 获取 video 元素的 source 元素
+    const videoSource = document.getElementById('video-source');
+
+    // 更新视频源
+    videoSource.src = videoList[currentVideoIndex];
+
+    // 重新加载视频并播放
+    video.load(); // 重新加载视频源
+    video.play(); // 播放新视频
+    currentSongIndex = (currentSongIndex + 1) % songs.length;
+    updateSongInfo();
+    playPause();
+});
+
+// 上一首歌曲
+prevButton.addEventListener("click", () => {
+    prevVideo()
+    // 动态获取当前播放的唱片 ID
+    const currentVinylID = `vinyl${currentSongIndex + 1}`; // 索引从 0 开始，加 1 匹配 HTML 的 ID
+    const currentVinyl = document.getElementById(currentVinylID);
+
+    if (currentVinyl) {
+        currentVinyl.querySelector("img").classList.remove("rotate");
+        currentVinyl.classList.remove("show");
+    }
+        // 获取 video 元素
+    const video = document.getElementById('tv-video');
+
+    // 更新视频索引，确保循环播放
+    currentVideoIndex = (currentVideoIndex + 1) % videoList.length;
+
+    // 获取 video 元素的 source 元素
+    const videoSource = document.getElementById('video-source');
+
+    // 更新视频源
+    videoSource.src = videoList[currentVideoIndex];
+
+    // 重新加载视频并播放
+    video.load(); // 重新加载视频源
+    video.play(); // 播放新视频
+    currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+    updateSongInfo();
+    playPause();
+});
+
+// 页面加载后获取歌曲数据
+window.addEventListener("load", fetchSongs);
+
+// 初始化 Swiper
+var swiper = new Swiper(".swiper", {
+  effect: "coverflow",
+  centeredSlides: true,
+  initialSlide: 0,
+  slidesPerView: "auto",
+  grabCursor: true,
+  spaceBetween: 40,
+  coverflowEffect: {
+    rotate: 25,
+    stretch: 0,
+    depth: 50,
+    modifier: 1,
+    slideShadows: false,
+  },
+  navigation: {
+    nextEl: ".forward",
+    prevEl: ".backward",
+  },
+});
+
+// Swiper 切换事件
+swiper.on("slideChange", () => {
+    currentSongIndex = swiper.activeIndex;
+    updateSongInfo();
+    playPause();
+    stopAllVinylRotation();
+});
+</script>
+
+
+
+</html>
