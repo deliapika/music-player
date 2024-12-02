@@ -44,7 +44,7 @@ def get_song_list():
                 # 假设歌手名为"Unknown Artist"
                 songs.append({
                     "title": song_title,
-                    "name": "Unknown Artist",
+                    "name": "Delia pika",
                     "source": song_source,
                     "cover": cover_video
                 })
@@ -74,7 +74,7 @@ def get_video_list():
     """
     try:
         # 列出目录中的所有文件
-        videos = [f for f in os.listdir(VIDEO_FOLDER) if f.endswith(('.mp4', '.avi', '.mov', '.mkv'))]
+        videos = sorted([f for f in os.listdir(VIDEO_FOLDER) if f.endswith(('.mp4', '.avi', '.mov', '.mkv'))])
         return jsonify({'videos': videos})
     except Exception as e:
         return jsonify({'error': str(e)}), 500

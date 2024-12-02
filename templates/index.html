@@ -277,7 +277,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
         font-size: 20px;
-        background: transparent; /* 背景透明 */
+        background: transparent; /* 奶白色背景 */
         border: none;
         padding: 10px 20px;
         cursor: pointer;
@@ -288,7 +288,6 @@
     .tv-screen button:hover {
         background-color: rgba(0, 0, 0, 0.7); /* 鼠标悬停时按钮背景变深 */
     }
-
 
     .bottom-container-right {
         font-family: 'Arial', sans-serif; /* 设置字体 */
@@ -449,7 +448,7 @@
                     </video>
 
                     <!-- 播放按钮 -->
-                    <button id="play-button" onclick="toggleVideo()"></button>
+                    <button  id ="play-button" onclick="toggleVideo()"></button>
                 </div>
             </div>
             <div class="music-player">
@@ -563,11 +562,11 @@
         </div>
         <div class="top-container-right">
             <div class="text-describe">
-                <h1 style="margin-bottom: 10px;margin-top: 20px">Pika Delia: Original</h1>
-                <h1 style="margin-bottom: 10px">Songs & MV Collection</h1>
-                <h1 style="margin-bottom: 10px">Collection</h1>
-                <p class="text-main">This collection, features my original songs and music videos, each reflecting my emotions and stories. Through music and visuals, I, Pika Delia, aim to connect with you and share a journey of love' and life.</p>
-                <p class="text-main">这合集包含了我的原创歌曲和音乐视频，每一首歌都传递着我的情感和故事。通过音乐和影像，希望与您产生共鸣，共享一段关于爱与生活的旅程。</p>
+                <h1 style="margin-bottom: 1px;margin-top: 20px">Pika Delia: Original</h1>
+                <h1 style="margin-bottom: 1px">Songs & MV Collection</h1>
+                <h1 style="margin-bottom: 1px">Collection</h1>
+                <p class="text-main" style="font-size: 100%;text-align: justify;margin-right: 40px;">This collection, features my original songs and music videos, each reflecting my emotions and stories. Through music and visuals, I, Pika Delia, aim to connect with you and share a journey of love' and life.</p>
+                <p class="text-main" style="font-size: 100%;text-align: justify;margin-right: 40px;">这合集包含了我的原创歌曲和音乐视频，每一首歌都传递着我的情感和故事。通过音乐和影像，希望与您产生共鸣，共享一段关于爱与生活的旅程。</p>
             </div>
             <div class="bottom-container-right">
                 <h1>Title</h1>
@@ -674,6 +673,7 @@ function prevVideo() {
 // 页面加载时获取视频列表
 window.onload = function () {
     fetchVideoList();
+    toggleVideo();
 };
 
 
